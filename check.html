@@ -33,11 +33,11 @@
 
   <script>
     // sangdo
-    // const targetLat = 37.5055308; 
-    // const targetLng = 126.946605;
+    const targetLat = 37.5055308; 
+    const targetLng = 126.946605;
     // Anyang
-    const targetLat = 37.373827; 
-    const targetLng = 126.955301;
+    // const targetLat = 37.373827; 
+    // const targetLng = 126.955301;
 
     const allowedRadius = 100; // meters
 
@@ -59,7 +59,7 @@
       const distance = getDistance(lat, lon, targetLat, targetLng);
 
       if (distance <= allowedRadius) {
-        document.getElementById("status").innerText = "위치 확인 완료. 아래에서 출근 체크를 진행해주세요.";
+        document.getElementById("status").innerText = "위치 확인 완료.<br> 아래에서 출근 체크를 진행해주세요.";
         document.getElementById("formFrame").style.display = 'block';
       } else {
         document.getElementById("status").innerText = "출근 가능한 위치가 아닙니다.";
