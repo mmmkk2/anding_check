@@ -39,10 +39,11 @@
       const { latitude, longitude } = pos.coords;
       const distance = getDistanceFromLatLonInMeters(latitude, longitude, targetLat, targetLng);
       if (distance <= allowedRadius) {
-        document.getElementById("status").innerText = "위치 확인 완료. 출근 체크 페이지로 이동합니다...";
+        document.getElementById("status").innerText = "확인 완료. 출근 체크 페이지로 이동합니다...";
         setTimeout(() => window.location.href = redirectURL, 1500);
       } else {
-        document.getElementById("status").innerText = `반경 100미터 이내가 아닙니다. 현재 거리: ${distance.toFixed(1)}m`;
+        // document.getElementById("status").innerText = `반경 100미터 이내가 아닙니다. 현재 거리: ${distance.toFixed(1)}m`;
+        document.getElementById("status").innerText = `위치가 잘못됐습니다.`;
       }
     }
 
