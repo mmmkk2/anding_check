@@ -6,7 +6,7 @@
   <title>출근 체크 위치 확인</title>
   <style>
     body { font-family: sans-serif; text-align: center; padding: 50px; }
-    #status { margin-top: 20px; font-size: 1.2em; }
+    #status { margin-top: 20px; font-size: 1.2em; color: #333; }
   </style>
 </head>
 <body>
@@ -20,30 +20,32 @@
     // Anyang
     // const targetLat = 37.373827; 
     // const targetLng = 126.955301;
+
     const allowedRadius = 100; // meters
     const redirectURL = "https://docs.google.com/forms/d/e/1FAIpQLSfY-W7iRhIimlincrIoGQuN58MNW9dAY1XCGLwMd4xQKnsU5w/viewform";
 
-    function getDistanceFromLatLonInMeters(lat1, lon1, lat2, lon2) {
-      const R = 6371e3; // Earth's radius in meters
-      const toRad = (value) => value * Math.PI / 180;
+    function getDistance(lat1, lon1, lat2, lon2) {
+      const R = 6371e3; // Earth radius in meters
+      const toRad = x => x * Math.PI / 180;
       const dLat = toRad(lat2 - lat1);
       const dLon = toRad(lon2 - lon1);
-      const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
                 Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
-                Math.sin(dLon / 2) * Math.sin(dLon / 2);
-      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+                Math.sin(dLon/2) * Math.sin(dLon/2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
       return R * c;
     }
 
     function success(pos) {
-      const { latitude, longitude } = pos.coords;
-      const distance = getDistanceFromLatLonInMeters(latitude, longitude, targetLat, targetLng);
+      const lat = pos.coords.latitude;
+      const lon = pos.coords.longitude;
+      const distance = getDistance(lat, lon, targetLat, targetLng);
+
       if (distance <= allowedRadius) {
-        document.getElementById("status").innerText = "확인 완료. 출근 체크 페이지로 이동합니다...";
+        document.getElementById("status").innerText = "위치 확인 완료. 출근 체크 페이지로 이동합니다...";
         setTimeout(() => window.location.href = redirectURL, 1500);
       } else {
-        document.getElementById("status").innerText = `반경 100미터 이내가 아닙니다. 현재 거리: ${distance.toFixed(1)}m`;
-        // document.getElementById("status").innerText = `위치가 잘못됐습니다.`;
+        document.getElementById("status").innerText = "출근 가능한 위치가 아닙니다.";
       }
     }
 
@@ -51,7 +53,11 @@
       document.getElementById("status").innerText = "위치 정보를 가져올 수 없습니다. 위치 권한을 허용해주세요.";
     }
 
-    navigator.geolocation.getCurrentPosition(success, error);
+    navigator.geolocation.watchPosition(success, error, {
+      enableHighAccuracy: true,
+      maximumAge: 0,
+      timeout: 10000
+    });
   </script>
 </body>
 </html>
