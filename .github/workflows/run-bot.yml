@@ -31,4 +31,4 @@ jobs:
           echo "LOGIN_PWD=${{ secrets.LOGIN_PWD }}" >> .env
 
       - name: Run Script
-        run: python main.py
+        run: python main.py --push
