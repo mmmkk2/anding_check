@@ -11,7 +11,9 @@ from selenium.webdriver.support import expected_conditions as EC
 from dotenv import load_dotenv
 
 # === 설정 ===
-load_dotenv(".env")
+import os
+# load_dotenv(".env")
+
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 CHAT_ID = os.getenv("CHAT_ID")
 LOGIN_ID = os.getenv("LOGIN_ID")
