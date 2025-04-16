@@ -50,6 +50,7 @@ def send_telegram_and_log(msg):
 
 # === 로그인 함수 ===
 def login(driver):
+    print("로그인 시도 중...")
     driver.get(BASE_URL)
     time.sleep(2)
     try:
@@ -58,20 +59,19 @@ def login(driver):
         driver.find_element(By.CLASS_NAME, "btn_login").click()
         time.sleep(3)
     except Exception as e:
-        send_telegram_and_log(f"[❌ 로그인 실패] ID/PWD 입력 중 오류 발생: {e}")
+        send_telegram_and_log(f"[로그인 실패] ID/PWD 입력 중 오류 발생: {e}")
         return False
 
     try:
         WebDriverWait(driver, 5).until(
             EC.presence_of_element_located((By.CLASS_NAME, "swal2-html-container"))
         )
-        
         alert_text = driver.find_element(By.CLASS_NAME, "swal2-html-container").text
         if "휴대폰 인증번호" in alert_text:
-            send_telegram_and_log("🔐 인증번호 입력이 필요합니다. 카카오톡 확인 후 auth_code.txt에 입력해주세요.")
+            print("인증번호 입력 대기 중...")
+            send_telegram_and_log("인증번호 입력이 필요합니다. 카카오톡 확인 후 auth_code.txt에 입력해주세요.")
             driver.find_element(By.CLASS_NAME, "swal2-confirm").click()
-
-            for i in range(60):
+            for _ in range(60):
                 try:
                     with open("auth_code.txt", "r") as f:
                         auth_code = f.read().strip()
@@ -79,29 +79,24 @@ def login(driver):
                         driver.find_element(By.ID, "auth_no").send_keys(auth_code)
                         driver.find_element(By.CLASS_NAME, "btn-primary").click()
                         driver.find_element(By.CSS_SELECTOR, 'button.btn.btn-primary[type="submit"]').click()
-                        # 인증번호 입력
                         driver.find_element(By.ID, "auth_no").send_keys(auth_code)
-
-                        # 버튼 클릭 - submit 타입 버튼 (class로 선택)
                         driver.find_element(By.CSS_SELECTOR, 'button[type="submit"]').click()
-
-                        send_telegram_and_log("✅ 인증번호 자동 입력 완료")
+                        send_telegram_and_log("인증번호 자동 입력 완료")
+                        print("인증번호 자동 입력 성공")
                         return True
-                except Exception as inner_e:
+                except:
                     pass
                 time.sleep(2)
-
-            # 인증 시간 초과
-            send_telegram_and_log("⏰ 인증번호 입력 시간 초과. 수동 인증이 필요합니다.")
+            send_telegram_and_log("인증번호 입력 시간 초과. 수동 인증이 필요합니다.")
             return False
     except:
-        # 인증 창이 아예 뜨지 않은 경우 (정상 로그인)
+        print("인증 없이 로그인 완료")
         return True
 
-    # 인증 창이 떴는데 종료되었거나 예외 발생한 경우
     if not driver.find_elements(By.ID, "auth_no"):
-        send_telegram_and_log("[⚠️ 인증 중단됨] 인증번호 입력 화면이 닫히거나 종료되었습니다. 수동 확인 바랍니다.")
+        send_telegram_and_log("인증번호 입력 화면이 닫히거나 종료되었습니다. 수동 확인 바랍니다.")
         return False
+    
 
 # === 드라이버 설정 ===
 def create_driver():
@@ -307,11 +302,12 @@ def check_time_ticket_expiring(driver, remain_hour=5):
         
 # === 메인 실행 ===
 def main():
+    print("자동화 시작")
     driver = create_driver()
-    
     try:
         success = login(driver)
         if not success:
+            print("로그인 실패로 종료")
             return
         check_seat_status(driver)
         check_new_payment(driver)
@@ -320,6 +316,7 @@ def main():
         send_telegram_and_log(f"[오류 발생] {e}")
     finally:
         driver.quit()
+        print("드라이버 종료 완료")
 
 if __name__ == "__main__":
     main()
