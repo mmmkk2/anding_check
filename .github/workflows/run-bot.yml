@@ -1,13 +1,11 @@
-name: Run Automation
-
-on:
-  schedule:
-    - cron: "*/1 * * * *"  # 매 1분마다 실행
-  workflow_dispatch:       # 수동 실행도 허용
-
 jobs:
-  run-script:
+  run:
     runs-on: ubuntu-latest
+    env:
+      TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+      CHAT_ID: ${{ secrets.CHAT_ID }}
+      LOGIN_ID: ${{ secrets.LOGIN_ID }}
+      LOGIN_PWD: ${{ secrets.LOGIN_PWD }}
 
     steps:
       - name: Checkout Repo
@@ -16,19 +14,12 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.11'
+          python-version: "3.10"
 
-      - name: Install Dependencies
+      - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-
-      - name: Create .env from secrets
-        run: |
-          echo "TELEGRAM_TOKEN=${{ secrets.TELEGRAM_TOKEN }}" >> .env
-          echo "CHAT_ID=${{ secrets.CHAT_ID }}" >> .env
-          echo "LOGIN_ID=${{ secrets.LOGIN_ID }}" >> .env
-          echo "LOGIN_PWD=${{ secrets.LOGIN_PWD }}" >> .env
 
       - name: Run Script
         run: python main.py --push
