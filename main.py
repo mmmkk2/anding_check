@@ -313,9 +313,9 @@ def main():
         success = login(driver)
         if not success:
             return
-        # check_seat_status(driver)
-        # check_new_payment(driver)
-        check_time_ticket_expiring(driver)
+        check_seat_status(driver)
+        check_new_payment(driver)
+        # check_time_ticket_expiring(driver)
     except Exception as e:
         send_telegram_and_log(f"[오류 발생] {e}")
     finally:
